@@ -1,5 +1,6 @@
 package {
 	
+	import com.bit101.charts.LineChart;
 	import com.bit101.components.HBox;
 	import com.bit101.components.HSlider;
 	import com.bit101.components.Knob;
@@ -13,6 +14,7 @@ package {
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.filters.GlowFilter;
 	import flash.utils.setTimeout;
 	
 	import org.osmf.events.DisplayObjectEvent;
@@ -25,6 +27,9 @@ package {
 	
 	public class Controls extends Sprite {
 		
+		private const GLOW:GlowFilter = new GlowFilter(0xFFFFFF, 1, 2, 2, 10, 3);
+		private const STAT_LENGTH:int = 20;
+		
 		private var player:MediaPlayer;
 		
 		private var urlInput:Text;
@@ -36,6 +41,7 @@ package {
 		private var time:Label;
 		private var bar:HSlider;
 		private var volume:Knob;
+		private var stat:LineChart;
 		
 		public function Controls() {
 			player = Config.app.player.p;
@@ -47,17 +53,18 @@ package {
 		 * Create controls
 		 */		
 		private function init():void {
-			// top
+			// EXMAPLES URLS
 			var hb:HBox = new HBox();
-			new Label(hb, 0, 0, "EX:");
+			var exLabel:Label = new Label(hb, 0, 0, "EX:");
 			var bfms:PushButton = new PushButton(hb, 0, 0, "FMS", onFMSVideo);
 			var berl:PushButton = new PushButton(hb, 0, 0, "VIDEO.MP4", onERLVideo);
 			var bts:PushButton = new PushButton(hb, 0, 0, "MPEG-TS", onTSVideo);
 			bfms.width = berl.width = bts.width = 60;
 			
-			// custom url
-			new Label(hb, 0, 0, "URL:");
+			// URL INPUT FILED
+			var urlLabel:Label = new Label(hb, 0, 0, "URL:");
 			urlInput = new Text(hb);
+			urlInput.text = "rtmp://localhost/rtmp/video.mp4";
 			urlInput.height = bfms.height;
 			urlInput.textField.multiline = false;
 			urlInput.textField.wordWrap = false;
@@ -66,10 +73,12 @@ package {
 				urlInput.text = Config.vars.url;
 				Config.app.player.connect(urlInput.text);
 			}
+			
+			// CONNECT BUTTON
 			var connectBut:PushButton = new PushButton(hb, 0, 0, "CONNECT", onConnect);
 			
-			// log
-			var logWindow:Window = new Window(null, 10, 30, "log");
+			// LOG WINDOW
+			var logWindow:Window = new Window(null, 10, 30, "LOG");
 			logWindow.hasMinimizeButton = true;
 			log = new TextArea(logWindow.content);
 			log.editable = false;
@@ -77,17 +86,20 @@ package {
 			logWindow.width = log.width;
 			logWindow.height = log.height + 20;
 			
-			// bottom
+			// CONTROLS HBOX
 			controlsBox = new HBox();
 			controlsBox.enabled = false;
 			
+			// STOP BUTTON
 			stop = new PushButton(controlsBox, 0, 0, "STOP", onStop);
 			stop.enabled = false;
 			
+			// PLAY BUTTON
 			play = new PushButton(controlsBox, 0, 0, "PLAY", onPlay);
 			pause = new PushButton(controlsBox, 0, 0, "PAUSE", onPause);
 			stop.width = play.width = pause.width = 50;
 			
+			// TIME AND BAR IN VBOX
 			var vb2:VBox = new VBox(controlsBox, 0, 2-stop.height);
 			vb2.spacing = 0;
 			time = new Label(vb2, 0, 0, "00:00 / 00:00");
@@ -98,16 +110,37 @@ package {
 			bar.height = stop.height;
 			bar.addEventListener(MouseEvent.MOUSE_DOWN, onBarDown);
 			
-			volume = new Knob(null, 0, 0, "volume", onVolumeChange);
+			// VOLUME
+			volume = new Knob(null, 0, 0, "VOLUME", onVolumeChange);
 			volume.minimum = 0;
 			volume.maximum = 100;
 			volume.labelPrecision = 0;
 			volume.value = player.volume * volume.maximum;
 			
+			// BUFFER LENGTH CHART WINDOW
+			var statWindow:Window = new Window(null, 0, 30, "BUFFER LENGTH CHART");
+			statWindow.hasMinimizeButton = true;
+			stat = new LineChart(statWindow.content, 30, 10, []);
+			stat.minimum = 0;
+			stat.maximum = 0;
+			stat.labelPrecision = 1;
+			stat.autoScale = false;
+			stat.showScaleLabels = true;
+			statWindow.width = 1.5*stat.x + stat.width;
+			statWindow.height = 4*stat.y + stat.height;
+			statWindow.x = Config.app.stage.stageWidth - statWindow.width - 10;
+			statWindow.y = logWindow.y;
+			// fill chart empty values
+			for (var i:uint=0; i<STAT_LENGTH; ++i) stat.data.push(0);
+			
+			// FILTERS FOR LABELS, because over black background labels invisible
+			exLabel.filters = urlLabel.filters = time.filters = [GLOW];
+			
 			addChild(hb);
-			addChild(logWindow);
 			addChild(controlsBox);
 			addChild(volume);
+			addChild(logWindow);
+			addChild(statWindow);
 			
 			Config.app.stage.addEventListener(Event.RESIZE, onResize);
 			setTimeout(onResize, 100);
@@ -162,16 +195,16 @@ package {
 			urlInput.width = w - 353;
 			
 			controlsBox.y = h - stop.height;
-			bar.width = w - stop.width - play.width - pause.width - volume.width - (controlsBox.numChildren-1)*controlsBox.spacing;
-			volume.x = w - volume.width;
+			volume.x = w - volume.width - 4;
 			volume.y = h - volume.height + 4;
+			bar.width = w - stop.width - play.width - pause.width - (w-volume.x) - controlsBox.numChildren*controlsBox.spacing;
 		}
 		
 		/**
-		 * Add log in textarea
-		 * @param args
+		 * Add text in log window
+		 * @param args Arguments like trace
 		 */		
-		private function addLog(...args):void {
+		public function addLog(...args):void {
 			log.text += args.join(" ") + "\n";
 			setTimeout(function():void {log.textField.scrollV = log.textField.maxScrollV}, 100);
 		}
@@ -182,8 +215,8 @@ package {
 		private function createListenerPlayer():void {
 			player.addEventListener(MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE, onStateChange);
 			player.addEventListener(MediaPlayerCapabilityChangeEvent.CAN_PLAY_CHANGE, onCanPlayChange);
-			player.addEventListener(SeekEvent.SEEKING_CHANGE, onSeekChange);
 			player.addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange);
+			player.addEventListener(SeekEvent.SEEKING_CHANGE, onSeekChange);
 			player.addEventListener(TimeEvent.DURATION_CHANGE, onDurationChange);
 			player.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
 			player.addEventListener(TimeEvent.COMPLETE, onTimeComplete);
@@ -193,6 +226,12 @@ package {
 			switch (e.state) {
 				case MediaPlayerState.READY:
 					stop.enabled = false;
+					
+					// set buffer time
+					if (Config.vars.buffer != undefined) {
+						player.bufferTime = Number(Config.vars.buffer);
+						addLog("bufferTime\t", player.bufferTime);
+					}
 				case MediaPlayerState.PAUSED:
 					play.enabled = true;
 					pause.enabled = false;
@@ -223,7 +262,22 @@ package {
 				bar.enabled = true;
 				bar.value = player.currentTime / player.duration;
 			}
+			
+			// time label
 			time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.duration);
+			
+			// buffer length chart
+			stat.data.push(player.bufferLength);
+			while (stat.data.length > 20) stat.data.shift();
+			var len:uint = stat.data.length;
+			var maxValue:Number = Number.NEGATIVE_INFINITY;
+			var value:Number;
+			for (var i:uint=0; i<len; ++i) {
+				value = stat.data[i];
+				maxValue = maxValue < value ? value : maxValue;
+			}
+			stat.maximum = maxValue;
+			stat.data = stat.data;
 		}
 		private function onTimeComplete(e:TimeEvent):void {
 			addLog("complete");

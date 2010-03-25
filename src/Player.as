@@ -5,17 +5,11 @@ package {
 	
 	import org.osmf.containers.MediaContainer;
 	import org.osmf.elements.VideoElement;
-	import org.osmf.events.DisplayObjectEvent;
-	import org.osmf.events.MediaPlayerCapabilityChangeEvent;
-	import org.osmf.events.MediaPlayerStateChangeEvent;
-	import org.osmf.events.SeekEvent;
-	import org.osmf.events.TimeEvent;
 	import org.osmf.layout.HorizontalAlign;
 	import org.osmf.layout.LayoutMetadata;
 	import org.osmf.layout.ScaleMode;
 	import org.osmf.layout.VerticalAlign;
 	import org.osmf.media.MediaPlayer;
-	import org.osmf.media.MediaPlayerState;
 	import org.osmf.media.URLResource;
 	
 	public class Player extends Sprite {
