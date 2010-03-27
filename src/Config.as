@@ -20,6 +20,7 @@ package {
 		public static var FILE:String = "video.mp4";
 		public static var SESSION:String = "";
 		public static var AUTOSTART:Boolean = false;
+		public static var TIMESHIFT:Number = 60;
 		
 		/**
 		 * Local settings for player
@@ -42,9 +43,11 @@ package {
 		 */
 		public static function timerFormat(time:Number):String {
 			if (isNaN(time)) return "00:00";
+			var sign:Boolean = time > 0;
+			if (!sign) time *= -1;
 			var min:Number = int(time/60);
 			var sec:Number = int(time - min*60);
-			return (min<10 ? "0"+min : min) + ":" + (sec<10 ? "0"+sec : sec);
+			return (sign ? "" : "-") + (min<10 ? "0"+min : min) + ":" + (sec<10 ? "0"+sec : sec);
 		}
 		
 		/**

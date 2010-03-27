@@ -43,6 +43,9 @@ package {
 		private var volume:Knob;
 		private var stat:LineChart;
 		
+		private var isTimeshift:Boolean;
+		private var timeshiftDelta:Number;
+		
 		public function Controls() {
 			player = Config.app.player.p;
 			init();
@@ -125,7 +128,7 @@ package {
 			stat.labelPrecision = 1;
 			stat.autoScale = false;
 			stat.showScaleLabels = true;
-			statWindow.width = 1.5*stat.x + stat.width;
+			statWindow.width = stat.x + stat.width + 10;
 			statWindow.height = 4*stat.y + stat.height;
 			statWindow.x = Config.app.stage.stageWidth - statWindow.width - 5;
 			statWindow.y = logWindow.y;
@@ -177,7 +180,12 @@ package {
 		private function onBarUp(e:MouseEvent):void {
 			player.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, onBarUp);
-			player.seek(player.duration * bar.value);
+			if (isTimeshift) {
+				timeshiftDelta = Config.TIMESHIFT * (1-bar.value);
+				player.seek(player.currentTime - timeshiftDelta);
+			} else {
+				player.seek(player.duration * bar.value);
+			}
 		}
 		private function onVolumeChange(e:Event):void {
 			player.volume = volume.value / volume.maximum;
@@ -222,6 +230,10 @@ package {
 						player.bufferTime = Number(Config.vars.buffer);
 						addLog("bufferTime\t", player.bufferTime);
 					}
+					
+					// reset timeshift
+					isTimeshift = false;
+					timeshiftDelta = 0;
 				case MediaPlayerState.PAUSED:
 					play.enabled = true;
 					pause.enabled = false;
@@ -243,18 +255,22 @@ package {
 			if (e.newWidth > 0) addLog("video_size\t", e.newWidth, e.newHeight);
 		}
 		private function onDurationChange(e:TimeEvent):void {
+			// if duration is NaN that mean is timeshift
+			isTimeshift = isNaN(e.time);
 			addLog("duration\t", e.time);
 		}
 		private function onCurrentTimeChange(e:TimeEvent):void {
-			if (isNaN(player.duration)) {
-				bar.enabled = false;
+			if (isTimeshift) {
+				// timeshift
+				var realCurrentTime:Number = Math.min(Config.TIMESHIFT, player.currentTime);
+				var viewCurrentTime:Number = realCurrentTime - timeshiftDelta;
+				time.text = Config.timerFormat(player.currentTime - timeshiftDelta) + " / " + Config.timerFormat(player.currentTime);
+				bar.value = viewCurrentTime / realCurrentTime;
 			} else {
-				bar.enabled = true;
+				// default
+				time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.duration);
 				bar.value = player.currentTime / player.duration;
 			}
-			
-			// time label
-			time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.duration);
 			
 			// buffer length chart
 			stat.data.push(player.bufferLength);
