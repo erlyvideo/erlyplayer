@@ -32,7 +32,7 @@ package {
 		
 		private var player:MediaPlayer;
 		
-		private var urlInput:Text;
+		public var urlInput:Text;
 		private var log:TextArea;
 		private var controlsBox:HBox;
 		private var stop:PushButton;
@@ -51,34 +51,33 @@ package {
 		
 		/**
 		 * Create controls
-		 */		
+		 */
 		private function init():void {
 			// EXMAPLES URLS
 			var hb:HBox = new HBox();
-			var exLabel:Label = new Label(hb, 0, 0, "EX:");
+			var exLabel:Label = new Label(hb, 0, 1, "EX:");
 			var bfms:PushButton = new PushButton(hb, 0, 0, "FMS", onFMSVideo);
 			var berl:PushButton = new PushButton(hb, 0, 0, "VIDEO.MP4", onERLVideo);
 			var bts:PushButton = new PushButton(hb, 0, 0, "MPEG-TS", onTSVideo);
 			bfms.width = berl.width = bts.width = 60;
 			
-			// URL INPUT FILED
-			var urlLabel:Label = new Label(hb, 0, 0, "URL:");
-			urlInput = new Text(hb);
-			urlInput.text = "rtmp://localhost/rtmp/video.mp4";
+			// URL INPUT FIELD
+			var urlLabel:Label = new Label(hb, 0, 1, "URL:");
+			urlInput = new Text(hb, 0, -1);
 			urlInput.height = bfms.height;
 			urlInput.textField.multiline = false;
 			urlInput.textField.wordWrap = false;
 			urlInput.editable = true;
-			if (Config.vars.url) {
-				urlInput.text = Config.vars.url;
-				Config.app.player.connect(urlInput.text);
+			urlInput.text = Config.SERVER + "/" + Config.APP + "/" + Config.FILE;
+			if (Config.vars.file) {
+				Config.app.player.connect(urlInput.text, Config.AUTOSTART);
 			}
 			
 			// CONNECT BUTTON
 			var connectBut:PushButton = new PushButton(hb, 0, 0, "CONNECT", onConnect);
 			
 			// LOG WINDOW
-			var logWindow:Window = new Window(null, 10, 30, "LOG");
+			var logWindow:Window = new Window(null, 5, 30, "LOG");
 			logWindow.hasMinimizeButton = true;
 			log = new TextArea(logWindow.content);
 			log.editable = false;
@@ -128,7 +127,7 @@ package {
 			stat.showScaleLabels = true;
 			statWindow.width = 1.5*stat.x + stat.width;
 			statWindow.height = 4*stat.y + stat.height;
-			statWindow.x = Config.app.stage.stageWidth - statWindow.width - 10;
+			statWindow.x = Config.app.stage.stageWidth - statWindow.width - 5;
 			statWindow.y = logWindow.y;
 			// fill chart empty values
 			for (var i:uint=0; i<STAT_LENGTH; ++i) stat.data.push(0);
@@ -187,7 +186,7 @@ package {
 		/**
 		 * On resize
 		 * @param e
-		 */		
+		 */
 		private function onResize(e:Event = null):void {
 			var w:int = Config.app.stage.stageWidth;
 			var h:int = Config.app.stage.stageHeight;
@@ -201,17 +200,8 @@ package {
 		}
 		
 		/**
-		 * Add text in log window
-		 * @param args Arguments like trace
-		 */		
-		public function addLog(...args):void {
-			log.text += args.join(" ") + "\n";
-			setTimeout(function():void {log.textField.scrollV = log.textField.maxScrollV}, 100);
-		}
-		
-		/**
 		 * Create listeners for player
-		 */		
+		 */
 		private function createListenerPlayer():void {
 			player.addEventListener(MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE, onStateChange);
 			player.addEventListener(MediaPlayerCapabilityChangeEvent.CAN_PLAY_CHANGE, onCanPlayChange);
@@ -281,6 +271,15 @@ package {
 		}
 		private function onTimeComplete(e:TimeEvent):void {
 			addLog("complete");
+		}
+		
+		/**
+		 * Add text in log window
+		 * @param args Arguments like trace
+		 */
+		public function addLog(...args):void {
+			log.text += args.join("") + "\n";
+			setTimeout(function():void {log.textField.scrollV = log.textField.maxScrollV}, 100);
 		}
 		
 	}

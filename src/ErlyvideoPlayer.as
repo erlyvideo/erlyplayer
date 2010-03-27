@@ -11,6 +11,7 @@ package {
 		
 		public var player:Player;
 		public var controls:Controls;
+		public var record:Record;
 		
 		public function ErlyvideoPlayer() {
 			checkStage();
@@ -18,7 +19,7 @@ package {
 		
 		/**
 		 * Check stage on exists and width > 0
-		 */		
+		 */
 		private function checkStage():void {
 			if (stage) {
 				if (stage.stageWidth > 0) {
@@ -41,7 +42,7 @@ package {
 		
 		/**
 		 * Init application
-		 */		
+		 */
 		private function init():void {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
@@ -50,11 +51,19 @@ package {
 			Config.app = this;
 			Config.vars = loaderInfo.parameters;
 			
+			if (Config.vars.server) Config.SERVER = Config.vars.server;
+			if (Config.vars.app) Config.APP = Config.vars.app;
+			if (Config.vars.file) Config.FILE = Config.vars.file;
+			if (Config.vars.session) Config.SESSION = Config.vars.session;
+			if (Config.vars.autostart == "true") Config.AUTOSTART = true;
+			
 			player = new Player();
 			controls = new Controls();
+			record = new Record();
 			
 			addChild(player);
 			addChild(controls);
+			addChild(record);
 		}
 		
 	}

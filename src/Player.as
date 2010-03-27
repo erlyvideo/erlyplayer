@@ -48,14 +48,15 @@ package {
 		
 		/**
 		 * Connect to url
-		 */		
-		public function connect(url:String):void {
+		 */
+		public function connect(url:String, autoPlay:Boolean=false):void {
 			if (url.length == 0) return;
 			if (v) c.removeMediaElement(v);
 			r = new URLResource(url);
 			v = new VideoElement(r);
 			v.smoothing = true;
 			p.media = v;
+			p.autoPlay = autoPlay;
 			c.addMediaElement(v);
 		}
 		
@@ -63,7 +64,7 @@ package {
 		/**
 		 * On resize
 		 * @param e
-		 */		
+		 */
 		private function onResize(e:Event = null):void {
 			var w:int = Config.app.stage.stageWidth;
 			var h:int = Config.app.stage.stageHeight;
