@@ -262,10 +262,9 @@ package {
 		private function onCurrentTimeChange(e:TimeEvent):void {
 			if (isTimeshift) {
 				// timeshift
-				var realCurrentTime:Number = Math.min(Config.TIMESHIFT, player.currentTime);
-				var viewCurrentTime:Number = realCurrentTime - timeshiftDelta;
+				var viewCurrentTime:Number = player.currentTime - timeshiftDelta;
 				time.text = Config.timerFormat(player.currentTime - timeshiftDelta) + " / " + Config.timerFormat(player.currentTime);
-				bar.value = viewCurrentTime / realCurrentTime;
+				bar.value = 1 - (player.currentTime - viewCurrentTime) / Config.TIMESHIFT;
 			} else {
 				// default
 				time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.duration);
