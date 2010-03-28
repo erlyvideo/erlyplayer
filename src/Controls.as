@@ -181,8 +181,13 @@ package {
 			player.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, onBarUp);
 			if (isTimeshift) {
-				timeshiftDelta = Math.min(player.currentTime - .1, Config.TIMESHIFT * (1-bar.value));
-				player.seek(player.currentTime - timeshiftDelta);
+				var newTimeshiftDelta:Number = Math.min(
+					player.currentTime + timeshiftDelta - .1,	// limit timeshift delta, -.1 for not seek to 0
+					Config.TIMESHIFT * (1-bar.value)			// try set timeshift delta
+				);
+				player.seek(player.currentTime + timeshiftDelta - newTimeshiftDelta);
+				addLog("try seek to\t", player.currentTime + timeshiftDelta - newTimeshiftDelta);
+				timeshiftDelta = newTimeshiftDelta;
 			} else {
 				player.seek(player.duration * bar.value);
 			}
@@ -250,8 +255,8 @@ package {
 		}
 		private function onSeekChange(e:SeekEvent):void {
 			if (e.seeking) addLog("seeking to\t", e.time);
-			if (isTimeshift) timeshiftDelta = player.currentTime - e.time;
-			addLog("onSeekCurTime\t", player.currentTime);
+//			if (isTimeshift) timeshiftDelta = player.currentTime - e.time;
+//			addLog("onSeekCurTime\t", player.currentTime, " :: ", e.time);
 		}
 		private function onMediaSizeChange(e:DisplayObjectEvent):void {
 			if (e.newWidth > 0) addLog("video_size\t", e.newWidth, " x ", e.newHeight);
@@ -266,9 +271,9 @@ package {
 			
 			if (isTimeshift) {
 				// timeshift
-				var viewCurrentTime:Number = player.currentTime - timeshiftDelta;
-				time.text = Config.timerFormat(viewCurrentTime) + " / " + Config.timerFormat(player.currentTime);
-				bar.value = 1 - (player.currentTime - viewCurrentTime) / Config.TIMESHIFT;
+//				var viewCurrentTime:Number = player.currentTime - timeshiftDelta;
+				time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.currentTime + timeshiftDelta);
+				bar.value = 1 - timeshiftDelta / Config.TIMESHIFT;
 			} else {
 				// default
 				time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.duration);
