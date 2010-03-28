@@ -181,7 +181,7 @@ package {
 			player.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, onBarUp);
 			if (isTimeshift) {
-				timeshiftDelta = Math.min(player.currentTime, Config.TIMESHIFT * (1-bar.value));
+				timeshiftDelta = Math.min(player.currentTime - .1, Config.TIMESHIFT * (1-bar.value));
 				player.seek(player.currentTime - timeshiftDelta);
 			} else {
 				player.seek(player.duration * bar.value);
@@ -251,9 +251,10 @@ package {
 		private function onSeekChange(e:SeekEvent):void {
 			if (e.seeking) addLog("seeking to\t", e.time);
 			if (isTimeshift) timeshiftDelta = player.currentTime - e.time;
+			addLog("onSeekCurTime\t", player.currentTime);
 		}
 		private function onMediaSizeChange(e:DisplayObjectEvent):void {
-			if (e.newWidth > 0) addLog("video_size\t", e.newWidth, e.newHeight);
+			if (e.newWidth > 0) addLog("video_size\t", e.newWidth, " x ", e.newHeight);
 		}
 		private function onDurationChange(e:TimeEvent):void {
 			// if duration is NaN that mean is timeshift
@@ -261,16 +262,19 @@ package {
 			if (!isTimeshift) addLog("duration\t", e.time);
 		}
 		private function onCurrentTimeChange(e:TimeEvent):void {
+			isTimeshift = isNaN(player.duration);
+			
 			if (isTimeshift) {
 				// timeshift
 				var viewCurrentTime:Number = player.currentTime - timeshiftDelta;
-				time.text = Config.timerFormat(player.currentTime - timeshiftDelta) + " / " + Config.timerFormat(player.currentTime);
+				time.text = Config.timerFormat(viewCurrentTime) + " / " + Config.timerFormat(player.currentTime);
 				bar.value = 1 - (player.currentTime - viewCurrentTime) / Config.TIMESHIFT;
 			} else {
 				// default
 				time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.duration);
 				bar.value = player.currentTime / player.duration;
 			}
+			addLog("curTime\t", player.currentTime);
 			
 			// buffer length chart
 			stat.data.push(player.bufferLength);
