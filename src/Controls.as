@@ -181,7 +181,7 @@ package {
 			player.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, onBarUp);
 			if (isTimeshift) {
-				timeshiftDelta = Config.TIMESHIFT * (1-bar.value);
+				timeshiftDelta = Math.min(player.currentTime, Config.TIMESHIFT * (1-bar.value));
 				player.seek(player.currentTime - timeshiftDelta);
 			} else {
 				player.seek(player.duration * bar.value);
@@ -250,6 +250,7 @@ package {
 		}
 		private function onSeekChange(e:SeekEvent):void {
 			if (e.seeking) addLog("seeking to\t", e.time);
+			if (isTimeshift) timeshiftDelta = player.currentTime - e.time;
 		}
 		private function onMediaSizeChange(e:DisplayObjectEvent):void {
 			if (e.newWidth > 0) addLog("video_size\t", e.newWidth, e.newHeight);
@@ -257,7 +258,7 @@ package {
 		private function onDurationChange(e:TimeEvent):void {
 			// if duration is NaN that mean is timeshift
 			isTimeshift = isNaN(e.time);
-			addLog("duration\t", e.time);
+			if (!isTimeshift) addLog("duration\t", e.time);
 		}
 		private function onCurrentTimeChange(e:TimeEvent):void {
 			if (isTimeshift) {
