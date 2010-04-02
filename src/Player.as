@@ -53,7 +53,7 @@ package {
 			if (url.length == 0) return;
 			if (v) c.removeMediaElement(v);
 			r = new URLResource(url);
-			v = new VideoElement(r);
+			v = new MyVideoElement(r);
 			v.smoothing = true;
 			p.media = v;
 			p.autoPlay = autoPlay;

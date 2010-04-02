@@ -17,6 +17,7 @@ package {
 	import flash.filters.GlowFilter;
 	import flash.utils.setTimeout;
 	
+	import org.osmf.elements.VideoElement;
 	import org.osmf.events.DisplayObjectEvent;
 	import org.osmf.events.MediaPlayerCapabilityChangeEvent;
 	import org.osmf.events.MediaPlayerStateChangeEvent;
@@ -279,7 +280,7 @@ package {
 				time.text = Config.timerFormat(player.currentTime) + " / " + Config.timerFormat(player.duration);
 				bar.value = player.currentTime / player.duration;
 			}
-			addLog("curTime\t", player.currentTime);
+//			addLog("curTime\t", player.currentTime);
 			
 			// buffer length chart
 			stat.data.push(player.bufferLength);
