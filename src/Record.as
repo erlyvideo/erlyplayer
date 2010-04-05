@@ -47,7 +47,7 @@ package {
 			
 			// HBOX WITH BUTTONS
 			var hb:HBox = new HBox(window.content, 10, v.height + 20);
-			connectBut = new PushButton(hb, 0, 0, "CONNECT", onActivate);
+			connectBut = new PushButton(hb, 0, 0, "CONNECT", onConnect);
 			liveBut = new PushButton(hb, 0, 0, "LIVE");
 			liveBut.addEventListener(MouseEvent.CLICK, onLive);
 			recordBut = new PushButton(hb, 0, 0, "RECORD");
@@ -60,7 +60,7 @@ package {
 			
 			addChild(window);
 		}
-		private function onActivate(e:MouseEvent):void {
+		private function onConnect(e:MouseEvent):void {
 			connect()
 		}
 		private function onLive(e:MouseEvent):void {
@@ -87,7 +87,7 @@ package {
 		 * @param e
 		 */
 		private function onNetStatus(e:NetStatusEvent):void {
-			Config.addLog(e.info.code);
+			Config.addLog("rec\t", e.info.code);
 			switch (e.info.code) {
 				case "NetConnection.Connect.Success":
 					liveBut.enabled = recordBut.enabled = true;
@@ -148,7 +148,7 @@ package {
 			}
 			
 			Config.setURL(fn);
-			Config.addLog("name\t\t", fn);
+			Config.addLog("rec name\t", fn);
 		}
 		private function onStop(e:MouseEvent):void {
 			ns.publish();
