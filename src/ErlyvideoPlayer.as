@@ -12,6 +12,7 @@ package {
 		public var player:Player;
 		public var controls:Controls;
 		public var record:Record;
+		public var chat:Chat;
 		
 		public function ErlyvideoPlayer() {
 			checkStage();
@@ -60,10 +61,12 @@ package {
 			player = new Player();
 			controls = new Controls();
 			record = new Record();
+			chat = new Chat();
 			
 			addChild(player);
 			addChild(controls);
 			addChild(record);
+			addChild(chat);
 		}
 		
 	}
