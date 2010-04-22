@@ -58,15 +58,15 @@ package {
 		 */
 		private function init():void {
 			// EXMAPLES URLS
-			var hb:HBox = new HBox();
-			var exLabel:Label = new Label(hb, 0, 1, "EX:");
-			var bfms:PushButton = new PushButton(hb, 0, 0, "FMS", onFMSVideo);
-			var berl:PushButton = new PushButton(hb, 0, 0, "VIDEO.MP4", onERLVideo);
-			var bts:PushButton = new PushButton(hb, 0, 0, "MPEG-TS", onTSVideo);
+			const hb:HBox = new HBox();
+			const exLabel:Label = new Label(hb, 0, 1, "EX:");
+			const bfms:PushButton = new PushButton(hb, 0, 0, "FMS", onFMSVideo);
+			const berl:PushButton = new PushButton(hb, 0, 0, "VIDEO.MP4", onERLVideo);
+			const bts:PushButton = new PushButton(hb, 0, 0, "MPEG-TS", onTSVideo);
 			bfms.width = berl.width = bts.width = 60;
 			
 			// URL INPUT FIELD
-			var urlLabel:Label = new Label(hb, 0, 1, "URL:");
+			const urlLabel:Label = new Label(hb, 0, 1, "URL:");
 			urlInput = new Text(hb, 0, -1);
 			urlInput.height = bfms.height;
 			urlInput.textField.multiline = false;
@@ -78,10 +78,10 @@ package {
 			}
 			
 			// CONNECT BUTTON
-			var connectBut:PushButton = new PushButton(hb, 0, 0, "CONNECT", onConnect);
+			const connectBut:PushButton = new PushButton(hb, 0, 0, "CONNECT", onConnect);
 			
 			// LOG WINDOW
-			var logWindow:Window = new Window(null, 5, 30, "LOG");
+			const logWindow:Window = new Window(null, 5, 30, "LOG");
 			logWindow.hasMinimizeButton = true;
 			log = new TextArea(logWindow.content);
 			log.editable = false;
@@ -103,7 +103,7 @@ package {
 			stop.width = play.width = pause.width = 50;
 			
 			// TIME AND BAR IN VBOX
-			var vb2:VBox = new VBox(controlsBox, 0, 2-stop.height);
+			const vb2:VBox = new VBox(controlsBox, 0, 2-stop.height);
 			vb2.spacing = 0;
 			time = new Label(vb2, 0, 0, "00:00 / 00:00");
 			bar = new HSlider(vb2);
@@ -121,7 +121,7 @@ package {
 			volume.value = player.volume * volume.maximum;
 			
 			// BUFFER LENGTH CHART WINDOW
-			var statWindow:Window = new Window(null, 0, 30, "BUFFER LENGTH CHART");
+			const statWindow:Window = new Window(null, 0, 30, "BUFFER LENGTH CHART");
 			statWindow.hasMinimizeButton = true;
 			stat = new LineChart(statWindow.content, 30, 10, []);
 			stat.minimum = 0;

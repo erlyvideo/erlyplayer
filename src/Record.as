@@ -46,7 +46,7 @@ package {
 			window.content.addChild(v);
 			
 			// HBOX WITH BUTTONS
-			var hb:HBox = new HBox(window.content, 10, v.height + 20);
+			const hb:HBox = new HBox(window.content, 10, v.height + 20);
 			connectBut = new PushButton(hb, 0, 0, "CONNECT", onConnect);
 			liveBut = new PushButton(hb, 0, 0, "LIVE");
 			liveBut.addEventListener(MouseEvent.CLICK, onLive);
@@ -126,9 +126,9 @@ package {
 		 * @param type type of stream, live or record
 		 */
 		private function start(type:String):void {
-			var d:Date = new Date();
-			var arr:Array = [d.getFullYear(), d.getMonth()+1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
-			var fn:String = type + "_"+ arr.join("-") + ".flv";
+			const d:Date = new Date();
+			const arr:Array = [d.getFullYear(), d.getMonth()+1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
+			const fn:String = type + "_"+ arr.join("-") + ".flv";
 			
 			ns.attachCamera(c);
 			ns.attachAudio(m);

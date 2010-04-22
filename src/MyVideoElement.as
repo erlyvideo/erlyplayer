@@ -20,10 +20,10 @@ package {
 		
 		private function onTraitAdd(e:MediaElementEvent):void {
 			if (hasTrait(MediaTraitType.SEEK) && !seekTrait) {
-				var loadTrait:NetStreamLoadTrait = getTrait(MediaTraitType.LOAD) as NetStreamLoadTrait;
-				var timeTrait:NetStreamTimeTrait = getTrait(MediaTraitType.TIME) as NetStreamTimeTrait;
+				const loadTrait:NetStreamLoadTrait = getTrait(MediaTraitType.LOAD) as NetStreamLoadTrait;
+				const timeTrait:NetStreamTimeTrait = getTrait(MediaTraitType.TIME) as NetStreamTimeTrait;
 				
-				seekTrait = new MyNetStreamSeekTrait(timeTrait, loadTrait.netStream);
+				seekTrait = new MyNetStreamSeekTrait(timeTrait, loadTrait, loadTrait.netStream);
 				
 				removeTrait(MediaTraitType.SEEK);
 				addTrait(MediaTraitType.SEEK, seekTrait);

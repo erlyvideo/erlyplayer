@@ -2,13 +2,14 @@ package {
 	
 	import flash.net.NetStream;
 	
+	import org.osmf.net.NetStreamLoadTrait;
 	import org.osmf.net.NetStreamSeekTrait;
 	import org.osmf.net.NetStreamTimeTrait;
 	
 	public class MyNetStreamSeekTrait extends NetStreamSeekTrait {
 		
-		public function MyNetStreamSeekTrait(timeTrait:NetStreamTimeTrait, stream:NetStream) {
-			super(timeTrait, stream);
+		public function MyNetStreamSeekTrait(timeTrait:NetStreamTimeTrait, loadTrait:NetStreamLoadTrait, stream:NetStream) {
+			super(timeTrait, loadTrait, stream);
 		}
 		
 		override public function canSeekTo(time:Number):Boolean {

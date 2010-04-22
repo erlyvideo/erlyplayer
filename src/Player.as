@@ -11,6 +11,7 @@ package {
 	import org.osmf.layout.VerticalAlign;
 	import org.osmf.media.MediaPlayer;
 	import org.osmf.media.URLResource;
+	import org.osmf.net.StreamingURLResource;
 	
 	public class Player extends Sprite {
 		
@@ -22,13 +23,13 @@ package {
 		private var r:URLResource;
 		
 		public function Player() {
-			init();
+			createPlayer();
 		}
 		
 		/**
 		 * Create player
 		 */
-		private function init():void {
+		private function createPlayer():void {
 			l = new LayoutMetadata();
 			l.scaleMode = ScaleMode.LETTERBOX;
 			l.snapToPixel = true;
@@ -52,14 +53,13 @@ package {
 		public function connect(url:String, autoPlay:Boolean=false):void {
 			if (url.length == 0) return;
 			if (v) c.removeMediaElement(v);
-			r = new URLResource(url);
+			r = new StreamingURLResource(url);
 			v = new MyVideoElement(r);
 			v.smoothing = true;
 			p.media = v;
 			p.autoPlay = autoPlay;
 			c.addMediaElement(v);
 		}
-		
 		
 		/**
 		 * On resize

@@ -105,7 +105,6 @@ package {
 			so.client = new Object();
 			so.client.onChat = onChat;
 			so.connect(nc);
-			
 		}
 		private function onSync(e:SyncEvent):void {
 			textArea.enabled = textInput.enabled = true;
