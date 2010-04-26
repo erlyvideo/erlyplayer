@@ -5,6 +5,15 @@ package {
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	
+	import erlyvideo.Chat;
+	import erlyvideo.Player;
+	import erlyvideo.Config;
+	import erlyvideo.Controls;
+	import erlyvideo.MyNetStreamSeekTrait;
+	import erlyvideo.MyVideoElement;
+	import erlyvideo.Player;
+	import erlyvideo.Record;
+	
 	[SWF(width=800, height=500, backgroundColor=0xFFFFFF, frameRate=25)]
 	
 	public class ErlyvideoPlayer extends Sprite {
