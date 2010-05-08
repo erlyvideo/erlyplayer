@@ -10,6 +10,7 @@ package erlyvideo {
 	import com.bit101.components.TextArea;
 	import com.bit101.components.VBox;
 	import com.bit101.components.Window;
+	import com.bit101.components.ComboBox;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -43,6 +44,8 @@ package erlyvideo {
 		private var bar:HSlider;
 		private var volume:Knob;
 		private var stat:LineChart;
+		private var bitrate:ComboBox;
+		private var language:ComboBox;
 		
 		private var isTimeshift:Boolean;
 		private var timeshiftDelta:Number;
@@ -136,6 +139,12 @@ package erlyvideo {
 			// fill chart empty values
 			for (var i:uint=0; i<STAT_LENGTH; ++i) stat.data.push(0);
 			
+			// Bitrate selection
+			bitrate = new ComboBox(null, 0, 0, "Bitrate");
+			bitrate.addEventListener(Event.SELECT, onBitrateChange);
+			bitrate.x = Config.app.stage.stageWidth - statWindow.width - 5;
+			bitrate.y = logWindow.y + statWindow.height + 10;
+			
 			// FILTERS FOR LABELS, because over black background labels invisible
 			exLabel.filters = urlLabel.filters = time.filters = [GLOW];
 			
@@ -144,6 +153,7 @@ package erlyvideo {
 			addChild(volume);
 			addChild(logWindow);
 			addChild(statWindow);
+			addChild(bitrate);
 			
 			Config.app.stage.addEventListener(Event.RESIZE, onResize);
 			setTimeout(onResize, 100);
@@ -156,6 +166,10 @@ package erlyvideo {
 		}
 		private function onTSVideo(e:MouseEvent):void {
 			changeURL(Config.VIDEO_URL_TS);
+		}
+
+		private function onBitrateChange(e:MouseEvent):void {
+			Config.addLog("change bitrate");
 		}
 		private function changeURL(url:String):void {
 			urlInput.text = url;
