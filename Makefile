@@ -1,4 +1,4 @@
-Sources = src/*.as
+Sources = src/*.as src/erlyvideo/*.as
 
 
 all: bin-release/ErlyvideoPlayer.swf
