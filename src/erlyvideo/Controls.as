@@ -24,8 +24,10 @@ package erlyvideo {
 	import org.osmf.events.MediaPlayerStateChangeEvent;
 	import org.osmf.events.SeekEvent;
 	import org.osmf.events.TimeEvent;
+	import org.osmf.events.LoadEvent;
 	import org.osmf.media.MediaPlayer;
 	import org.osmf.media.MediaPlayerState;
+	import org.osmf.traits.LoadState;
 	
 	public class Controls extends Sprite {
 		
@@ -144,6 +146,13 @@ package erlyvideo {
 			bitrate.addEventListener(Event.SELECT, onBitrateChange);
 			bitrate.x = Config.app.stage.stageWidth - statWindow.width - 5;
 			bitrate.y = logWindow.y + statWindow.height + 10;
+			bitrate.width = statWindow.width / 2 - 4;
+
+			language = new ComboBox(null, 0, 0, "Language");
+			language.addEventListener(Event.SELECT, onLanguageChange);
+			language.x = Config.app.stage.stageWidth - statWindow.width/2 - 1;
+			language.y = logWindow.y + statWindow.height + 10;
+			language.width = statWindow.width / 2 - 4;
 			
 			// FILTERS FOR LABELS, because over black background labels invisible
 			exLabel.filters = urlLabel.filters = time.filters = [GLOW];
@@ -154,6 +163,7 @@ package erlyvideo {
 			addChild(logWindow);
 			addChild(statWindow);
 			addChild(bitrate);
+			addChild(language);
 			
 			Config.app.stage.addEventListener(Event.RESIZE, onResize);
 			setTimeout(onResize, 100);
@@ -171,6 +181,10 @@ package erlyvideo {
 		private function onBitrateChange(e:MouseEvent):void {
 			Config.addLog("change bitrate");
 		}
+		private function onLanguageChange(e:MouseEvent):void {
+			Config.addLog("change language");
+		}
+
 		private function changeURL(url:String):void {
 			urlInput.text = url;
 			Config.app.player.connect(url);
@@ -231,6 +245,7 @@ package erlyvideo {
 		 * Create listeners for player
 		 */
 		private function createListenerPlayer():void {
+			player.addEventListener(LoadEvent.LOAD_STATE_CHANGE, onLoadStateChange); 
 			player.addEventListener(MediaPlayerStateChangeEvent.MEDIA_PLAYER_STATE_CHANGE, onStateChange);
 			player.addEventListener(MediaPlayerCapabilityChangeEvent.CAN_PLAY_CHANGE, onCanPlayChange);
 			player.addEventListener(DisplayObjectEvent.MEDIA_SIZE_CHANGE, onMediaSizeChange);
@@ -239,6 +254,30 @@ package erlyvideo {
 			player.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onCurrentTimeChange);
 			player.addEventListener(TimeEvent.COMPLETE, onTimeComplete);
 		}
+		
+		private function onLoadStateChange(e:LoadEvent):void {
+      if (e.loadState == LoadState.READY) {
+        (player.media as MyVideoElement).client.addHandler("onMetaData", onMetaData);
+      }
+    }
+    
+    private function onMetaData(info:Object):void {
+//      for (var s:String in info) {
+//        Config.addLog(s,"=>", info[s]);
+//      }
+      if (info["bitrates"]) {
+        var items:Array = [];
+        var i:Number;
+        for(i = 0; i < info["bitrates"].length; i++) {
+          items.push(info["bitrates"][i]+"");
+        }
+        bitrate.items = items;
+      }
+      if (info["languages"]) {
+        language.items = info["languages"];
+      }
+    }
+		
 		private function onStateChange(e:MediaPlayerStateChangeEvent):void {
 			addLog("state\t\t", e.state)
 			switch (e.state) {
