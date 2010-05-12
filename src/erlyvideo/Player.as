@@ -53,7 +53,11 @@ package erlyvideo {
 		public function connect(url:String, autoPlay:Boolean=false):void {
 			if (url.length == 0) return;
 			if (v) c.removeMediaElement(v);
-			r = new StreamingURLResource(url);
+			if (Config.vars.session) {
+  			r = new StreamingURLResource(url, null, NaN, NaN, Vector.<Object>([Config.vars.session]));
+			} else {
+			  r = new StreamingURLResource(url);
+			}
 			v = new MyVideoElement(r);
 			v.smoothing = true;
 			p.media = v;
