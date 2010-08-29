@@ -114,9 +114,10 @@ package erlyvideo {
 			c.setQuality(0, 90);
 			
 			if (!m) m = Microphone.getMicrophone();
-			m.rate = 44;
+			//m.rate = 44;
+      m.codec = "Speex";
 			m.gain = 80;
-			m.setUseEchoSuppression(true);
+			//m.setUseEchoSuppression(true);
 			
 			v.attachCamera(c);
 		}
