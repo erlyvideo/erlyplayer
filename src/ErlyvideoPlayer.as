@@ -3,16 +3,18 @@ package {
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
+	import flash.ui.ContextMenu;
+	import flash.ui.ContextMenuItem;
 	
-	import erlyvideo.Chat;
-	import erlyvideo.Player;
-	import erlyvideo.Config;
-	import erlyvideo.Controls;
-	import erlyvideo.MyNetStreamSeekTrait;
-	import erlyvideo.MyVideoElement;
-	import erlyvideo.Player;
-	import erlyvideo.Record;
+	import org.erlyvideo.Chat;
+	import org.erlyvideo.Config;
+	import org.erlyvideo.Controls;
+	import org.erlyvideo.Player;
+	import org.erlyvideo.Record;
 	
 	[SWF(width=800, height=500, backgroundColor=0xFFFFFF, frameRate=25)]
 	
@@ -28,11 +30,11 @@ package {
 		}
 		
 		/**
-		 * Check stage on exists and width > 0
+		 * Check stage on exists and width > 0 and height > 0
 		 */
 		private function checkStage():void {
 			if (stage) {
-				if (stage.stageWidth > 0) {
+				if (stage.stageWidth > 0 && stage.stageHeight > 0) {
 					init();
 					return;
 				}
@@ -54,9 +56,26 @@ package {
 		 * Init application
 		 */
 		private function init():void {
+			// stage setup
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.showDefaultContextMenu = false;
+			
+			// context menu setup
+			const cm:ContextMenu = new ContextMenu();
+			cm.hideBuiltInItems();
+			var cmi:ContextMenuItem;
+			cmi = new ContextMenuItem("Erlyvideo multiprotocol streaming server", false, false);
+			cm.customItems.push(cmi);
+			cmi = new ContextMenuItem("erlyvideo.org");
+			cmi.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, getHandlerToURL("http://erlyvideo.org"));
+			cm.customItems.push(cmi);
+			cmi = new ContextMenuItem("Programming ErlyvideoPlayer", true, false);
+			cm.customItems.push(cmi);
+			cmi = new ContextMenuItem("kutu.ru");
+			cmi.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, getHandlerToURL("http://kutu.ru"));
+			cm.customItems.push(cmi);
+			contextMenu = cm;
 			
 			Config.app = this;
 			Config.vars = loaderInfo.parameters;
@@ -76,6 +95,15 @@ package {
 			addChild(controls);
 			addChild(record);
 			addChild(chat);
+		}
+		
+		/**
+		 * Get function for ContextMenuItem
+		 */
+		private function getHandlerToURL(url:String):Function {
+			return function(e:ContextMenuEvent):void {
+				navigateToURL(new URLRequest(url), "_blank");
+			}
 		}
 		
 	}
